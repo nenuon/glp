@@ -16,7 +16,7 @@ var palette = []color.Color{color.RGBA{0x00, 0x00, 0x00, 0xff}, color.RGBA{0x00,
 const (
 	blackIndex = 0 // パレットの最初の色
 	greenIndex = 1 // パレットの次の色
-	blueIndex  = 2 // パレットの3色目
+	redIndex   = 2 // パレットの3色目
 )
 
 func main() {
@@ -45,7 +45,7 @@ func lissajous(out io.Writer) {
 			if t < cycles*2*math.Pi/2 {
 				colorIndex = greenIndex
 			} else {
-				colorIndex = blueIndex
+				colorIndex = redIndex
 			}
 			img.SetColorIndex(size+int(x*size+0.5), size+int(y*size+0.5), colorIndex)
 		}
