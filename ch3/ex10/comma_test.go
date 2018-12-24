@@ -17,7 +17,7 @@ func TestComma(t *testing.T) {
 		},
 		{
 			s:        "1234",
-			expected: "123,4",
+			expected: "1,234",
 		},
 	}
 	for _, tc := range ts {
