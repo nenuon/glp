@@ -23,8 +23,6 @@ func rotate(v []int, r int) []int {
 }
 
 func gcd(a, b int) int {
-	a = int(math.Abs(float64(a)))
-	b = int(math.Abs(float64(b)))
 	for b > 0 {
 		a, b = b, a%b
 	}
@@ -33,7 +31,7 @@ func gcd(a, b int) int {
 
 func rotate2(v []int, r int) {
 	L := len(v)
-	g := gcd(L, r)
+	g := gcd(L, int(math.Abs(float64(r))))
 	for i := 0; i < g; i++ {
 		x := v[i]
 		for j := (i + r + L) % L; j != i; j = (j + r + L) % L {
