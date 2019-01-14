@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"strings"
 	"testing"
 
@@ -37,10 +37,10 @@ func CountTest(b *testing.T) {
 	for _, tc := range ts {
 		HTMLdoc, err := html.Parse(strings.NewReader(tc.doc))
 		if err != nil {
-			log.Fatalln(err)
+			fmt.Errorf("%v\n", err)
 		}
-		if got := Count(HTMLdoc); equals(got, tc.expected) {
-
+		if got := Count(HTMLdoc); !equals(got, tc.expected) {
+			fmt.Errorf("unexpected count. expected %v, but got %v\n", tc.expected, got)
 		}
 	}
 }
