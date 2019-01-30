@@ -213,6 +213,10 @@ func TestElems(t *testing.T) {
 			s:        newIntSet(1, 3, 5, 200),
 			expected: []int{1, 3, 5, 200},
 		},
+		{
+			s:        newIntSet(),
+			expected: []int{},
+		},
 	}
 	for _, tc := range ts {
 		if got := tc.s.Elems(); !func() bool {
