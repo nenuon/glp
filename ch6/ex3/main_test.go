@@ -111,13 +111,13 @@ func TestIntersectWith(t *testing.T) {
 		expected string
 	}{
 		{
-			s:        newIntSet(1, 3, 5, 7),
+			s:        newIntSet(1, 3, 5, 100),
 			t:        newIntSet(4, 5, 7),
-			expected: `{5 7}`,
+			expected: `{5}`,
 		},
 		{
-			s:        newIntSet(1, 3, 5, 7),
-			t:        newIntSet(2, 4, 6, 8),
+			s:        newIntSet(1, 3, 5),
+			t:        newIntSet(2, 4, 6, 100),
 			expected: `{}`,
 		},
 	}
@@ -136,14 +136,14 @@ func TestDifferenceWith(t *testing.T) {
 		expected string
 	}{
 		{
-			s:        newIntSet(1, 3, 5, 7),
+			s:        newIntSet(1, 3, 5, 100),
 			t:        newIntSet(4, 5, 7),
-			expected: `{1 3}`,
+			expected: `{1 3 100}`,
 		},
 		{
-			s:        newIntSet(1, 3, 5, 7),
-			t:        newIntSet(2, 4, 6, 8),
-			expected: `{1 3 5 7}`,
+			s:        newIntSet(1, 3, 5),
+			t:        newIntSet(2, 4, 6, 100),
+			expected: `{1 3 5}`,
 		},
 	}
 	for _, tc := range ts {
@@ -161,18 +161,43 @@ func TestSymmetricDifference(t *testing.T) {
 		expected string
 	}{
 		{
-			s:        newIntSet(1, 3, 5, 7),
+			s:        newIntSet(1, 3, 5, 100),
 			t:        newIntSet(4, 5, 7),
-			expected: `{1 3 4}`,
+			expected: `{1 3 4 7 100}`,
 		},
 		{
 			s:        newIntSet(1),
-			t:        newIntSet(2, 4, 6, 8),
-			expected: `{1 2 4 6 8}`,
+			t:        newIntSet(2, 4, 6, 100),
+			expected: `{1 2 4 6 100}`,
 		},
 	}
 	for _, tc := range ts {
 		tc.s.SymmetricDifference(tc.t)
+		if got := tc.s.String(); got != tc.expected {
+			t.Errorf("unexpected Len: expected %v, but got %v\n", tc.expected, got)
+		}
+	}
+}
+
+func TestUnionWith(t *testing.T) {
+	ts := []struct {
+		s        *IntSet
+		t        *IntSet
+		expected string
+	}{
+		{
+			s:        newIntSet(1, 3, 5, 100),
+			t:        newIntSet(4, 5, 7),
+			expected: `{1 3 4 5 7 100}`,
+		},
+		{
+			s:        newIntSet(),
+			t:        newIntSet(2, 4, 6, 100),
+			expected: `{2 4 6 100}`,
+		},
+	}
+	for _, tc := range ts {
+		tc.s.UnionWith(tc.t)
 		if got := tc.s.String(); got != tc.expected {
 			t.Errorf("unexpected Len: expected %v, but got %v\n", tc.expected, got)
 		}

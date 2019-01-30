@@ -143,11 +143,11 @@ func max(x, y int) int {
 
 // 対照差
 func (s *IntSet) SymmetricDifference(t *IntSet) {
-	for i := 0; i < max(len(s.words), len(t.words)); i++ {
+	for i, tword := range t.words {
 		if i >= len(s.words) {
 			s.words = append(s.words, t.words[i:]...)
 			break
 		}
-		s.words[i] ^= t.words[i]
+		s.words[i] ^= tword
 	}
 }
