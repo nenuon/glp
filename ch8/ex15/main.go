@@ -46,10 +46,10 @@ func broadcaster() {
 			// 受信したメッセージを全てのクライアントの
 			// 送信用メッセージチャネルへブロードキャストする
 			for cli := range clients {
-				// TODO: timeout設定
-				go func(c client) {
-					c.ch <- msg
-				}(cli)
+				if len(cli.ch) == cap(cli.ch) {
+					continue
+				}
+				cli.ch <- msg
 			}
 		case cli := <-entering:
 			clients[cli] = true
@@ -75,7 +75,7 @@ func handleConn(conn net.Conn) {
 	awake := make(chan struct{})
 	go teacher(conn, awake) // 寝てないか見張っている
 
-	ch := make(chan string) // 送信用のクライアントメッセージ
+	ch := make(chan string, 32) // 送信用のクライアントメッセージ
 	go clientWriter(conn, ch)
 
 	input := bufio.NewScanner(conn)
