@@ -2,18 +2,23 @@ package main
 
 import "fmt"
 
+type withdraw struct {
+	amount int
+	ch     chan bool
+}
+
 var deposits = make(chan int) // 入金額を送信する
 var balances = make(chan int) // 残高受信
-var withdrawAmount = make(chan int)
-var withdrawOk = make(chan bool)
+var withdraws = make(chan withdraw)
 
 func Deposits(amount int) {
 	deposits <- amount
 }
 
 func Withdraw(amount int) bool {
-	withdrawAmount <- amount
-	return <-withdrawOk
+	r := make(chan bool)
+	withdraws <- withdraw{amount, r}
+	return <-r
 }
 
 func Balance() int {
@@ -27,12 +32,12 @@ func teller() {
 		case amount := <-deposits:
 			balance += amount
 		case balances <- balance:
-		case amount := <-withdrawAmount:
-			if amount <= balance {
-				balance -= amount
-				withdrawOk <- true
+		case w := <-withdraws:
+			if w.amount <= balance {
+				balance -= w.amount
+				w.ch <- true
 			} else {
-				withdrawOk <- false
+				w.ch <- false
 			}
 		}
 	}
