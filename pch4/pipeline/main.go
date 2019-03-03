@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"time"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	data := []string{"hoge", "huga"}
-	pipeline := toSingle(ctx, toParalell(ctx, toUpper(ctx, take(ctx, sendForever(ctx, data...), 20)), 4)...)
+	pipeline := sleep(ctx, toSingle(ctx, toParalell(ctx, toUpper(ctx, sendForever(ctx, data...)), 8)...), 100*time.Millisecond)
 	for v := range pipeline {
 		fmt.Println(v)
 	}
@@ -114,6 +115,23 @@ func toSingle(ctx context.Context, ins ...<-chan string) <-chan string {
 			}(i)
 		}
 		wg.Wait()
+	}()
+	return out
+}
+
+func sleep(ctx context.Context, in <-chan string, t time.Duration) <-chan string {
+	out := make(chan string)
+	go func() {
+		defer close(out)
+		for s := range in {
+			time.Sleep(t)
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				out <- s
+			}
+		}
 	}()
 	return out
 }
